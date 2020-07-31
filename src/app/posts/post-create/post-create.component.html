@@ -1,0 +1,58 @@
+<!-- Two-way binding is not needed when using Angular Provide mechanism
+  Angular Provide detects the form element and the FormsModule import, and creates a javascript
+  object behind the scenes to register form input elements, validate and provide values
+  Instead of using [(ngModel)]='<scope variable name>', define a name property inside the input element and
+    just write ngModel inside it
+-->
+<!-- Later in the course, two-way binding is required to set the default value for the input fields, when
+the edit route is triggered from the list component and we need to populate the current list values to edit.
+Wrap ngModel in square brackets and pull in the respective value from the 'post' object
+ -->
+
+<mat-card>
+  <!-- Add local reference using #postForm and passing ngForm
+    #postForm gives access to angular form object which can be passed as
+    an argument to onAddPost() to fetch input field values -->
+  <!-- post?.title => elvis operator or optional chaining operator,
+    continues with title value iff post object is valid -->
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <form [formGroup]="form" (submit)="onSavePost()" *ngIf="!isLoading">
+    <mat-form-field>
+      <input
+        matInput
+        type="text"
+        formControlName="title"
+        placeholder="Post Title"
+      />
+      <mat-error *ngIf="form.get('title').invalid"
+        >Please enter a post title.</mat-error
+      >
+    </mat-form-field>
+    <div>
+      <button mat-stroked-button type="button" (click)="filePicker.click()">
+        Pick Image
+      </button>
+      <input type="file" #filePicker (change)="onImagePicked($event)" />
+    </div>
+    <div
+      class="image-preview"
+      *ngIf="imagePreview && imagePreview !== '' && form.get('image').valid"
+    >
+      <img [src]="imagePreview" [alt]="form.value.title" />
+    </div>
+    <mat-form-field>
+      <textarea
+        matInput
+        rows="6"
+        [formControlName]="'content'"
+        placeholder="Post Content"
+      ></textarea>
+      <mat-error *ngIf="form.get('content').invalid"
+        >Please enter post content.</mat-error
+      >
+    </mat-form-field>
+    <button mat-raised-button color="accent" type="submit">
+      Save Post
+    </button>
+  </form>
+</mat-card>

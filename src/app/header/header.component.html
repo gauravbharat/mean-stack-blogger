@@ -1,0 +1,15 @@
+<!-- Use Angular Router link directive 'routerLink', used by Angular Router, to re-render pages -->
+<mat-toolbar color="primary">
+  <span>
+    <a routerLink="/">MyMessages</a>
+  </span>
+  <span class="spacer"></span>
+  <ul>
+    <li>
+      <!-- Apply mat-accent color when link is active -->
+      <a mat-button routerLink="/create" routerLinkActive="mat-accent">
+        New Post
+      </a>
+    </li>
+  </ul>
+</mat-toolbar>
