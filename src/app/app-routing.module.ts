@@ -5,6 +5,7 @@ import { PostListComponent } from './posts/post-list/post-list.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
+import { AuthGuard } from './auth/auth.guard';
 
 /** TIP
  * Routes are simply JavaScript objects,
@@ -12,11 +13,17 @@ import { SignupComponent } from './auth/signup/signup.component';
  * Properties:
  * path (without slash '/') === page to load, where empty path === Main page, starting page
  * component === which module to load
+ *
+ * Attach AuthGuard to the routes that needs to be protected from unauthenticated access
  */
 const routes: Routes = [
   { path: '', component: PostListComponent },
-  { path: 'create', component: PostCreateComponent },
-  { path: 'edit/:postId', component: PostCreateComponent },
+  { path: 'create', component: PostCreateComponent, canActivate: [AuthGuard] },
+  {
+    path: 'edit/:postId',
+    component: PostCreateComponent,
+    canActivate: [AuthGuard],
+  },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
 ];
@@ -28,5 +35,6 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
+  providers: [AuthGuard],
 })
 export class AppRoutingModule {}
