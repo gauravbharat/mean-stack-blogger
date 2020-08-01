@@ -45,6 +45,7 @@ export class PostsService {
                 content: post.content,
                 id: post._id,
                 imagePath: post.imagePath,
+                creator: post.creator,
               };
             }),
             maxPosts: postData.maxPosts,
@@ -82,6 +83,7 @@ export class PostsService {
       title: string;
       content: string;
       imagePath: string;
+      creator: string;
     }>(`http://localhost:3000/api/posts/${id}`);
 
     // Return a cloned/new object using spread operator,
@@ -129,6 +131,7 @@ export class PostsService {
         title,
         content,
         imagePath: image,
+        creator: null,
       };
     }
 

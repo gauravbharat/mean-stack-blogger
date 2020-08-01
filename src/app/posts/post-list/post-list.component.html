@@ -9,22 +9,11 @@
     </div>
     <p>{{ post.content }}</p>
 
-    <mat-action-row>
+    <mat-action-row *ngIf="userIsAuthenticated && userId === post.creator">
       <!-- Instead of using regular routerLink syntax and passing the dynamic string as `/edit/${post.id}`,
       bind the routerLink property in square brackets, and pass on the path to load as individual segments -->
-      <a
-        *ngIf="userIsAuthenticated"
-        mat-button
-        color="primary"
-        [routerLink]="['/edit', post.id]"
-        >EDIT</a
-      >
-      <button
-        *ngIf="userIsAuthenticated"
-        mat-button
-        color="warn"
-        (click)="onDelete(post.id)"
-      >
+      <a mat-button color="primary" [routerLink]="['/edit', post.id]">EDIT</a>
+      <button mat-button color="warn" (click)="onDelete(post.id)">
         DELETE
       </button>
     </mat-action-row>

@@ -22,6 +22,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   // Auth related
   userIsAuthenticated = false;
+  userId: string;
   private authStatusSubs: Subscription;
 
   // DEPENDENCY INJECTION
@@ -33,8 +34,10 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     // Fetch all posts on class initialization
-    this.postsService.getPosts(this.postsPerPage, this.currentPage); //Trigger http request to fetch posts from server
+    this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    this.userId = this.authService.getUserId();
 
+    //Trigger http request to fetch posts from server
     /** Create a subscription to listen to data changes. The observer takes 3 arguments -
      * 1st argument - a function which gets executed whenever a new data is emitted
      * 2nd argument - would be called when an error is emitted
@@ -66,6 +69,7 @@ export class PostListComponent implements OnInit, OnDestroy {
       .getAuthStatusListener()
       .subscribe((isAuthorized) => {
         this.userIsAuthenticated = isAuthorized;
+        this.userId = this.authService.getUserId();
       });
   }
 

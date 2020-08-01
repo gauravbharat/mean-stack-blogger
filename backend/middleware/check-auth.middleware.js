@@ -13,10 +13,15 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(" ")[1];
 
     // Verify token. jwt.verify() would throw an error if failed
-    jwt.verify(token, process.env.JWT_SECTRE);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECTRE);
 
-    // all good, continue
-    next();
+    // Pass the email and userId, from the decoded JWT token, to the continuing request object
+    req.userData = {
+      email: decodedToken.email,
+      userId: decodedToken.userId,
+    };
+
+    next(); // all good, continue
   } catch (error) {
     res.status(401).json({ message: "Auth failed!" });
   }
