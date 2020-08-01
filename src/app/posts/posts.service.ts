@@ -147,7 +147,7 @@ export class PostsService {
 }
 
 /** Observables, Observers and Subscriptions
- * Observers: subscribes to Observables, or establishes a subscription with an Observable and manages it
+ * Observers => subscribes to Observables, or establishes a subscription with an Observable and manages it
  * Three methods that are called on the Observers side i.e. the observer calls -
  * 1. next() => emits new packets of data
  * 2. error() => emits error e.g. on http calls that fails
