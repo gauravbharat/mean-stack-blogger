@@ -10,6 +10,7 @@ import { AuthData } from './auth-data.model';
 export class AuthService {
   private isAuthenticated = false;
   private token: string;
+  private tokenTimer: any;
   /** Listener to set, is the user authenticated (true) or not (false)
    * The token can change on login, logout, expired, etc., so we want to push that token update
    * information to the components that are interested.
@@ -53,11 +54,19 @@ export class AuthService {
     };
 
     this.http
-      .post<{ token: string }>(`http://localhost:3000/api/user/login`, authData)
+      .post<{ token: string; expiresIn: number }>(
+        `http://localhost:3000/api/user/login`,
+        authData
+      )
       .subscribe((response) => {
         const token = response.token;
         this.token = token;
         if (token) {
+          const expiresInDuration = response.expiresIn;
+          this.tokenTimer = setTimeout(() => {
+            this.logout();
+          }, expiresInDuration * 1000);
+
           this.isAuthenticated = true;
           this.authStatusListner.next(true); //update the listener status
           this.router.navigate(['/']);
@@ -69,6 +78,7 @@ export class AuthService {
     this.token = null;
     this.isAuthenticated = false;
     this.authStatusListner.next(false);
+    clearTimeout(this.tokenTimer);
     this.router.navigate(['/']);
   }
 }
