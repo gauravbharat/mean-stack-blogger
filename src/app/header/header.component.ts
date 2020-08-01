@@ -16,6 +16,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
+    // Get the current token status since the header loads
+    // after the autoAuthUser() is run in the App component and the header component is not loaded yet
+    this.userIsAuthenticated = this.authService.getIsAuth();
+
     // Subscribe to token status observable
     this.authListenerSubs = this.authService
       .getAuthStatusListener()

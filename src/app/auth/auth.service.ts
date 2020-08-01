@@ -63,22 +63,78 @@ export class AuthService {
         this.token = token;
         if (token) {
           const expiresInDuration = response.expiresIn;
-          this.tokenTimer = setTimeout(() => {
-            this.logout();
-          }, expiresInDuration * 1000);
+          this.setAuthTimer(expiresInDuration);
 
           this.isAuthenticated = true;
           this.authStatusListner.next(true); //update the listener status
+
+          const now = new Date();
+          const expirationDate = new Date(
+            now.getTime() + expiresInDuration * 1000
+          );
+          this.saveAuthData(token, expirationDate);
+
           this.router.navigate(['/']);
         }
       });
   }
 
+  // Automatically authorize the user if we'got the information in localStorage
+  autoAuthUser() {
+    const authInformation = this.getAuthData();
+
+    if (!authInformation) return;
+
+    // Check that the token expiration date is in the future
+    const now = new Date();
+    const expiresIn = authInformation.expirationDate.getTime() - now.getTime();
+
+    if (expiresIn > 0) {
+      this.token = authInformation.token;
+      this.isAuthenticated = true;
+      this.setAuthTimer(expiresIn / 1000);
+      this.authStatusListner.next(true);
+    } else {
+      this.logout();
+    }
+  }
+
   logout() {
+    this.clearAuthData();
     this.token = null;
     this.isAuthenticated = false;
     this.authStatusListner.next(false);
     clearTimeout(this.tokenTimer);
     this.router.navigate(['/']);
+  }
+
+  private setAuthTimer(duration: number) {
+    this.tokenTimer = setTimeout(() => {
+      this.logout();
+    }, duration * 1000);
+  }
+
+  private saveAuthData(token: string, expirationDate: Date) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('expiration', expirationDate.toISOString()); //serialized expiration date stored
+  }
+
+  private clearAuthData() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('expiration');
+  }
+
+  private getAuthData() {
+    const token = localStorage.getItem('token');
+    const expirationDate = localStorage.getItem('expiration');
+    if (!token || !expirationDate) {
+      return;
+    }
+
+    // De-serialize expiration date
+    return {
+      token,
+      expirationDate: new Date(expirationDate),
+    };
   }
 }
