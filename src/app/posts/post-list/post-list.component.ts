@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -19,8 +20,15 @@ export class PostListComponent implements OnInit, OnDestroy {
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
 
+  // Auth related
+  userIsAuthenticated = false;
+  private authStatusSubs: Subscription;
+
   // DEPENDENCY INJECTION
-  constructor(public postsService: PostsService) {}
+  constructor(
+    public postsService: PostsService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.isLoading = true;
@@ -41,12 +49,31 @@ export class PostListComponent implements OnInit, OnDestroy {
         this.totalPosts = postData.postCount;
         this.posts = postData.posts;
       });
+
+    /** Post-list component was loaded/initialised after we logged in
+     * This means the auth token status emitted could not be captured by the subscriber code or this observer
+     * Since the observer was uninitialized to received the emitted data
+     *
+     * There was no new information pushed when the post-list component was created.
+     * Observables push new information and not the current one.
+     * Use the current value directly from the service in that case, before executing the subscription code.
+     * Alternative was to use a different type of Subject which yields the previous value
+     *  */
+    this.userIsAuthenticated = this.authService.getIsAuth();
+
+    // Subscribe to auth token status
+    this.authStatusSubs = this.authService
+      .getAuthStatusListener()
+      .subscribe((isAuthorized) => {
+        this.userIsAuthenticated = isAuthorized;
+      });
   }
 
   ngOnDestroy() {
     // Remove/Cancel the subscription whenever the component is destroyed (or is out of DOM)
     // AND prevent any memory leaks
     this.postsSub.unsubscribe();
+    this.authStatusSubs.unsubscribe();
   }
 
   onDelete(postId: string) {

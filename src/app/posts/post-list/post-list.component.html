@@ -12,8 +12,19 @@
     <mat-action-row>
       <!-- Instead of using regular routerLink syntax and passing the dynamic string as `/edit/${post.id}`,
       bind the routerLink property in square brackets, and pass on the path to load as individual segments -->
-      <a mat-button color="primary" [routerLink]="['/edit', post.id]">EDIT</a>
-      <button mat-button color="warn" (click)="onDelete(post.id)">
+      <a
+        *ngIf="userIsAuthenticated"
+        mat-button
+        color="primary"
+        [routerLink]="['/edit', post.id]"
+        >EDIT</a
+      >
+      <button
+        *ngIf="userIsAuthenticated"
+        mat-button
+        color="warn"
+        (click)="onDelete(post.id)"
+      >
         DELETE
       </button>
     </mat-action-row>
