@@ -5,6 +5,9 @@ import { Subject } from 'rxjs';
 
 // Import interface of AuthData type
 import { AuthData } from './auth-data.model';
+import { environment } from '../../environments/environment';
+
+const BACKEND_URL = `${environment.apiUrl}/user`;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -45,7 +48,7 @@ export class AuthService {
       password,
     };
 
-    this.http.post(`http://localhost:3000/api/user/signup`, authData).subscribe(
+    this.http.post(`${BACKEND_URL}/signup`, authData).subscribe(
       () => {
         // navigate to Home page on success
         this.router.navigate['/'];
@@ -65,7 +68,7 @@ export class AuthService {
 
     this.http
       .post<{ token: string; expiresIn: number; userId: string }>(
-        `http://localhost:3000/api/user/login`,
+        `${BACKEND_URL}/login`,
         authData
       )
       .subscribe(
