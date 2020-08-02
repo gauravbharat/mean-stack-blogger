@@ -3,8 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { PostListComponent } from './posts/post-list/post-list.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
-import { LoginComponent } from './auth/login/login.component';
-import { SignupComponent } from './auth/signup/signup.component';
 import { AuthGuard } from './auth/auth.guard';
 
 /** TIP
@@ -15,6 +13,14 @@ import { AuthGuard } from './auth/auth.guard';
  * component === which module to load
  *
  * Attach AuthGuard to the routes that needs to be protected from unauthenticated access
+ *
+ *  ***** Lazy Loading *****
+ * Link child Router Module, AuthRouterModule, using a new route 'auth'
+ * Instead of adding a component, use loadChildren which describes a path you want to load lazyly
+ * import AuthModule using the arrow function, and pass it to loadChildren
+ * to let angular know, which class the child would use as a module, and to lazy load that module
+ *
+ * REMOVE the AuthModule imported in the APP MODULE, since we have not registered it here for lazy load
  */
 const routes: Routes = [
   { path: '', component: PostListComponent },
@@ -24,8 +30,11 @@ const routes: Routes = [
     component: PostCreateComponent,
     canActivate: [AuthGuard],
   },
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+  },
+  // { path: 'auth', loadChildren: './auth/auth.module#AuthModule' },
 ];
 
 /** Now let the RouterModule know about the Routes defined by importing it and

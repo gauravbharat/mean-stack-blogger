@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
     // get current auth status value instead of observing new
     const isAuth = this.authService.getIsAuth();
     if (!isAuth) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/login']);
     }
     return isAuth;
   }
