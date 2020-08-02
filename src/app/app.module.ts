@@ -16,6 +16,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
 
 /** Components */
 import { AppComponent } from './app.component';
@@ -24,9 +25,11 @@ import { PostCreateComponent } from './posts/post-create/post-create.component';
 import { PostListComponent } from './posts/post-list/post-list.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
+import { ErrorComponent } from './error/error.component';
 
 /** HTTP Interceptors */
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { ErrorInterceptor } from './error-interceptor';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,7 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     PostListComponent,
     LoginComponent,
     SignupComponent,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,10 +55,20 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     MatExpansionModule,
     MatProgressSpinnerModule,
     MatPaginatorModule,
+    MatDialogModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
+  /** Since the error component would load neither through a selector nor through any routing,
+   * we have to inform angular that it eventually needs to be prepared to create this component.
+   * Since we dynamically create this component using the Material Dialog service
+   *
+   * entryComponents inform Angular that the components inside it are going to be used, even
+   * though Angular can't see them
+   */
+  entryComponents: [ErrorComponent],
 })
 export class AppModule {}

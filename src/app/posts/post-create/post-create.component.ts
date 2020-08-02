@@ -1,23 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { PostsService } from '../posts.service';
 import { Post } from '../post.model';
 import { mimeType } from './mime-type.validator';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-post-create',
   templateUrl: './post-create.component.html',
   styleUrls: ['./post-create.component.css'],
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
   private mode = 'create';
   private postId: string;
   post: Post;
   isLoading = false;
   form: FormGroup;
   imagePreview: string;
+  private authStatusSubs: Subscription;
 
   // @Output() postCreated = new EventEmitter<Post>();
 
@@ -26,10 +29,17 @@ export class PostCreateComponent implements OnInit {
    */
   constructor(
     public postsService: PostsService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
+    this.authStatusSubs = this.authService
+      .getAuthStatusListener()
+      .subscribe((authStatus) => {
+        this.isLoading = false;
+      });
+
     /** Initialise FormGroup
      * FormControl takes following arguments:
      * 1. the beginning state
@@ -76,6 +86,10 @@ export class PostCreateComponent implements OnInit {
         this.postId = null;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.authStatusSubs.unsubscribe();
   }
 
   onSavePost() {

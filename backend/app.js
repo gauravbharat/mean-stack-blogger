@@ -11,7 +11,7 @@ const app = express();
 mongoose
   .connect(
     `mongodb+srv://supermax:PY8upjEShALCKq4S@cluster0.kwjzp.gcp.mongodb.net/mean-stack-course?retryWrites=true&w=majority`,
-    { useNewUrlParser: true, useUnifiedTopology: true }
+    { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   )
   .then(() => {
     console.log("Connected to database!");

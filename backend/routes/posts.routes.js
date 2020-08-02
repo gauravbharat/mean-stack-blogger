@@ -9,6 +9,7 @@ const MIME_TYPE_MAP = {
   "image/png": "png",
   "image/jpeg": "jpg",
   "image/jpg": "jpg",
+  "image/gif": "gif",
 };
 
 // Store incoming files on the local system
@@ -96,7 +97,7 @@ router.put(
         }
       })
       .catch((error) => {
-        res.status(500).json({ message: "Server error updating post." });
+        res.status(500).json({ message: "Couldn't update post!" });
       });
   }
 );
@@ -127,31 +128,41 @@ router.get("", (req, res, next) => {
     })
     .catch((error) => {
       res.status(500).json({
-        message: "Server error fetching posts",
+        message: "Fetching posts failed!",
       });
     });
 });
 
 router.get("/:id", (req, res, next) => {
-  Post.findById(req.params.id).then((post) => {
-    if (post) {
-      res.status(200).json(post);
-    } else {
-      res.status(404).json({ message: "Post not found!" });
-    }
-  });
+  Post.findById(req.params.id)
+    .then((post) => {
+      if (post) {
+        res.status(200).json(post);
+      } else {
+        res.status(404).json({ message: "Post not found!" });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Fetching post failed!",
+      });
+    });
 });
 
 router.delete("/:id", checkAuth, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId }).then(
-    (result) => {
+  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
+    .then((result) => {
       if (result.n > 0) {
         res.status(200).json({ message: "Post deleted!" });
       } else {
         res.status(401).json({ message: "Not authorized!" });
       }
-    }
-  );
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Error deleting post!",
+      });
+    });
 });
 
 module.exports = router;

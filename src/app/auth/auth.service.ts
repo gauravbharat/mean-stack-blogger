@@ -45,11 +45,16 @@ export class AuthService {
       password,
     };
 
-    this.http
-      .post(`http://localhost:3000/api/user/signup`, authData)
-      .subscribe((response) => {
-        console.log(response);
-      });
+    this.http.post(`http://localhost:3000/api/user/signup`, authData).subscribe(
+      () => {
+        // navigate to Home page on success
+        this.router.navigate['/'];
+      },
+      (error) => {
+        // Push the false value to the entire app, Signup component is listening to this
+        this.authStatusListner.next(false);
+      }
+    );
   }
 
   login(email: string, password: string) {
@@ -63,26 +68,32 @@ export class AuthService {
         `http://localhost:3000/api/user/login`,
         authData
       )
-      .subscribe((response) => {
-        const token = response.token;
-        this.token = token;
-        if (token) {
-          const expiresInDuration = response.expiresIn;
-          this.setAuthTimer(expiresInDuration);
+      .subscribe(
+        (response) => {
+          const token = response.token;
+          this.token = token;
+          if (token) {
+            const expiresInDuration = response.expiresIn;
+            this.setAuthTimer(expiresInDuration);
 
-          this.isAuthenticated = true;
-          this.userId = response.userId;
-          this.authStatusListner.next(true); //update the listener status
+            this.isAuthenticated = true;
+            this.userId = response.userId;
+            this.authStatusListner.next(true); //update the listener status
 
-          const now = new Date();
-          const expirationDate = new Date(
-            now.getTime() + expiresInDuration * 1000
-          );
-          this.saveAuthData(token, expirationDate, this.userId);
+            const now = new Date();
+            const expirationDate = new Date(
+              now.getTime() + expiresInDuration * 1000
+            );
+            this.saveAuthData(token, expirationDate, this.userId);
 
-          this.router.navigate(['/']);
+            this.router.navigate(['/']);
+          }
+        },
+        (error) => {
+          // Push the false value to the entire app, Login component is listening to this
+          this.authStatusListner.next(false);
         }
-      });
+      );
   }
 
   // Automatically authorize the user if we'got the information in localStorage
