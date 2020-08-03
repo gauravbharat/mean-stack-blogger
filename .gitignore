@@ -42,6 +42,8 @@ testem.log
 /typings
 .env
 /backend/images
+node_modules
+/node_modules
 
 # System Files
 .DS_Store

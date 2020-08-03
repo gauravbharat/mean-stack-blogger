@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "garyd-mean-stack": {
+      "hosting": {
+        "mean-stack-course": [
+          "garyd-mean-stack"
+        ]
+      }
+    }
+  }
+}
